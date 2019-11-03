@@ -17,6 +17,10 @@ exports[`--showConfig outputs config info and exits 1`] = `
       "errorOnDeprecated": false,
       "extraGlobals": [],
       "forceCoverageMatch": [],
+      "freezeCoreModules": false,
+      "freezeCoreModulesWhitelist": [
+        "crypto"
+      ],
       "globals": {},
       "haste": {
         "computeSha1": false,
@@ -73,6 +77,7 @@ exports[`--showConfig outputs config info and exits 1`] = `
       "transformIgnorePatterns": [
         "/node_modules/"
       ],
+      "verbose": null,
       "watchPathIgnorePatterns": []
     }
   ],

@@ -44,6 +44,8 @@ export type DefaultOptions = {
   errorOnDeprecated: boolean;
   expand: boolean;
   forceCoverageMatch: Array<Glob>;
+  freezeCoreModules: boolean;
+  freezeCoreModulesWhitelist: Array<string>;
   globals: ConfigGlobals;
   haste: HasteConfig;
   maxConcurrency: number;
@@ -124,6 +126,8 @@ export type InitialOptions = Partial<{
   findRelatedTests: boolean;
   forceCoverageMatch: Array<Glob>;
   forceExit: boolean;
+  freezeCoreModules?: boolean;
+  freezeCoreModulesWhitelist?: Array<string>;
   json: boolean;
   globals: ConfigGlobals;
   globalSetup: string | null | undefined;
@@ -311,6 +315,8 @@ export type ProjectConfig = {
   forceCoverageMatch: Array<Glob>;
   globalSetup?: string;
   globalTeardown?: string;
+  freezeCoreModules: boolean;
+  freezeCoreModulesWhitelist: Array<string>;
   globals: ConfigGlobals;
   haste: HasteConfig;
   moduleDirectories: Array<string>;
@@ -347,6 +353,7 @@ export type ProjectConfig = {
   transformIgnorePatterns: Array<Glob>;
   watchPathIgnorePatterns: Array<string>;
   unmockedModulePathPatterns?: Array<string>;
+  verbose: boolean | null | undefined;
 };
 
 export type Argv = Arguments<

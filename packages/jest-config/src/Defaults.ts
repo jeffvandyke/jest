@@ -26,6 +26,8 @@ const defaultOptions: Config.DefaultOptions = {
   errorOnDeprecated: false,
   expand: false,
   forceCoverageMatch: [],
+  freezeCoreModules: false,
+  freezeCoreModulesWhitelist: ['crypto'],
   globals: {},
   haste: {
     computeSha1: false,

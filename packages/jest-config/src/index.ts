@@ -182,6 +182,8 @@ const groupOptions = (
     extraGlobals: options.extraGlobals,
     filter: options.filter,
     forceCoverageMatch: options.forceCoverageMatch,
+    freezeCoreModules: options.freezeCoreModules,
+    freezeCoreModulesWhitelist: options.freezeCoreModulesWhitelist,
     globalSetup: options.globalSetup,
     globalTeardown: options.globalTeardown,
     globals: options.globals,
@@ -219,6 +221,7 @@ const groupOptions = (
     transform: options.transform,
     transformIgnorePatterns: options.transformIgnorePatterns,
     unmockedModulePathPatterns: options.unmockedModulePathPatterns,
+    verbose: options.verbose,
     watchPathIgnorePatterns: options.watchPathIgnorePatterns,
   }),
 });

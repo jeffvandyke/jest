@@ -30,7 +30,7 @@ import type * as JestGlobals from '@jest/globals';
 import type {SourceMapRegistry} from '@jest/source-map';
 import {LegacyFakeTimers, ModernFakeTimers} from '@jest/fake-timers';
 import {formatStackTrace, separateMessageFromStack} from 'jest-message-util';
-import {createDirectory, deepCyclicCopy} from 'jest-util';
+import {ErrorWithStack, createDirectory, deepCyclicCopy} from 'jest-util';
 import {escapePathForRegex} from 'jest-regex-util';
 import {
   ScriptTransformer,
@@ -141,6 +141,7 @@ const runtimeSupportsVmModules = typeof SyntheticModule === 'function';
 class Runtime {
   private _cacheFS: StringMap;
   private _config: Config.ProjectConfig;
+  private _coreModulesProxyCache: {[moduleName: string]: any};
   private _coverageOptions: ShouldInstrumentOptions;
   private _currentlyExecutingModulePath: string;
   private _environment: JestEnvironment;
@@ -194,6 +195,7 @@ class Runtime {
       coverageProvider: 'babel',
       sourcesRelatedToTestsInChangedFiles: undefined,
     };
+    this._coreModulesProxyCache = Object.create(null);
     this._currentlyExecutingModulePath = '';
     this._environment = environment;
     this._explicitShouldMock = new Map();
@@ -1120,7 +1122,46 @@ class Runtime {
       return this._getMockedNativeModule();
     }
 
-    return require(moduleName);
+    const module = require(moduleName);
+
+    if (
+      !this._config.freezeCoreModules ||
+      this._config.freezeCoreModulesWhitelist.includes(moduleName)
+    ) {
+      return module;
+    }
+
+    if (this._coreModulesProxyCache[moduleName]) {
+      return this._coreModulesProxyCache[moduleName];
+    }
+
+    const set = (
+      target: object,
+      property: PropertyKey,
+      value: any,
+      receiver: any,
+    ) => {
+      if (typeof value !== 'function' || value._isMockFunction) {
+        return Reflect.set(target, property, value, receiver);
+      }
+
+      if (this._config.verbose) {
+        console.warn(
+          new ErrorWithStack(
+            `Trying to override method '${property.toString()}' of a frozen core module '${moduleName}'`,
+            set,
+          ),
+        );
+      }
+
+      return true;
+    };
+
+    const proxy = new Proxy(module, {set});
+
+    this._coreModulesProxyCache[moduleName] = proxy;
+
+    return proxy;
   }
 
   private _importCoreModule(moduleName: string, context: VMContext) {
